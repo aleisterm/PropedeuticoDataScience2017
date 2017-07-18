@@ -1,0 +1,170 @@
+---
+title: "Tarea 3"
+author: "Aleister Montfort"
+date: "18 de julio de 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+## 1. Plantear el problema de regresión como un problema de mínimos cuadrados, encontrar el vector
+$\hat\beta=[\hat\beta_1,...,\hat\beta_p]^T$ que resuelva $\hat\beta=argmin_{\beta \in \mathbb R} = ||Y-X\beta||^2$
+
+Dado que el error de estimación $\hat u_i$ lo definimos como $y_i-\beta\hat X_i$, el problema de mínimos cuadrados que se plantea para minimizar el error de estimación es $\underset{\hat\beta}{Min \ e}$=$\sum_{i=1}^p \hat u_i^2$=$\underset{\hat\beta}{Min\sum_{i=1}^p} (y_i-\beta X_i) $ 
+
+Y cuando se deriva e iguala a cero se obtiene como solución
+
+$\mathbf\beta=\frac{\sum_{i=1}^p (y_i-\bar y)(x_i-\bar x)}{\sum_{i=1}^p (x_i-\bar x)^2}$
+
+## ¿Por qué este planteamiento nos da un ajuste lineal a nuestros datos? ¿Podríamos usarlo para ajustar polinomios? 
+Nos da un ajuste lineal porque la derivada de la suma de cuadrados es lineal. Se puede utilizar mínimos cuadrados para ajustar polinomios, pero la función de error que minimizaríamos incluiría alguna $\beta$ con algún término polinomial 
+## Argumentar la relación entre la solución encontrada y un problema de proyección en subespacios vectoriales de álgebra lineal. ¿Cuál es la relación particular con el teorema de Pitágoras? 
+Como el problema al que le queremos encontrar una solución es del tipo $Ax=b$, se puede pensar que $Ax$ es una aproximación a $b$. Entonces el problema general de mínimos cuadrados es encontrar una $x$ tal que haga la distancia $||b-Ax||$ tan pequeña como sea posible. 
+El problema de mínimos cuadrados se puede plantear como un problema de proyección, es decir, como encontrar un vector x que haga que $Ax$ sea el punto  en el espacio columna $ColA$ más cercano a $b$. 
+$$\hat b=proy_{ColA}b$$
+
+Si $b$ está en el espacio columna de A, la ecuación $Ax=\hat b$ tiene solución y entonces existe un vector $\hat b$ en $\mathbb R^n$ tal que $$A\hat x=\hat b$$
+
+Esta solución proviene de resolver esta proyección de una relación pitagórica en donde buscamos la distancia mínima en el plano $Ax$ que es la proyección de $b$ y que minimiza el error.
+Si $p$ es la proyección y $e$ el error, entonces la solución descrita proviene de la relación pitagórica $$||Ax-b||^2=||Ax-p||^2+||e||^2$$
+
+## ¿Qué logramos al agregar una columna de unos en la matriz ?
+
+Al agregar el vector columna de unos a la matriz, lo que estamos haciendo es incluir la intercepta en el problema de mininimización de cuadrados, y entonces estaríamos estimando tanto el valor de la intercepta, como el de la pendiente de la recta que mejor ajusta los datos (en caso de una regresión univariada).
+## ¿Cuál es la función de verosimilitud del problema anterior? 
+Se escribe la verosimilitud como $L(\beta, \sigma^2)=f(Y|\beta, \sigma^2,X)$, y la función que se maximiza como $$\prod_{i=1}^p f(Y\,| \, \beta, \sigma^2,X)$$
+$$ =\frac{1}{(2\Pi \sigma^2)} exp \Biggl\{ \frac{-1}{(2\sigma^2)} \sum_{i=1}^p (Y_i-\beta_0 -\beta_1X_i)^2 \Biggl\}$$
+Y al tomar logaritmos de la función de máxima versimilitud tenemos
+$$-\frac {n}{2}log(2\pi) -\frac{n}{2}log(\sigma^2) -\frac{1}{2\sigma^2} \sum_{i=1}^p (Y_i-\beta_0 -\beta_1X_i)^2 $$
+
+Cuando derivamos respecto a $\beta_0, \beta_1$ y $\, \sigma^2$ e igualamos a cero, encontramos los valores para estos parámetros resolviendo tres ecuaciones
+ $$(1) \, \, \,  \sum_{i=1}^p (Y_i-\beta_0 -\beta_1X_i)=0 $$
+ $$(2) \, \, \,  \sum_{i=1}^p x_i (Y_i-\beta_0 -\beta_1X_i)=0 $$
+ $$(3) \, \, \,  \sum_{i=1}^p  (Y_i-\beta_0 -\beta_1X_i)^2=n\sigma^2 $$
+ 
+Los parámetros $\beta_0, \beta_1$ y $\, \sigma^2$  que son solución a este sistema de tres ecuaciones son:
+
+$$\hat\beta_0=\bar Y -\hat\beta_1  \,$$
+
+$$\hat\beta_1=\frac{\sum_{i=1}^p (y_i-\bar y)(x_i-\bar x)}{\sum_{i=1}^p (x_i-\bar x)^2}  \,$$ y
+
+
+$$\sigma^2=\frac {1}{n}\sum_{i=1}^p (Y_i-\beta_0 -\beta_1X_i)=\sum_{i=1}^p e_i$$
+
+Estos son los mismos estimadores que obtuvimos en el problema de mínimos cuadrados
+
+El teorema de Gauss-Markov establece que si se cumplen ciertas condiciones, los estimadores de Mínimos Cuadrados Ordinarios son los mejores estimadores lineales insesgados (BLUE). Las condiciones que se deben cumplir son: $$$$
+1) Linerariedad en los parámetros $$ $$
+2) La muestra es aleatoria$$$$
+3) Esperanza condicional del error es cero (El modelo está correctamente especificado y no hay problemas como variables omitidas o causalidad inversa)$$$$
+4) Varianza es constante $$$$
+5) No colineariedad perfecta $$$$
+
+Si se cumplen estas condiciones, entonces los estimadores de MCO son:
+a) Insesgados ($E(\hat\beta_0=\beta_0 \;\; y \; E(\hat\beta_1=\beta_1 )$); $ $  y
+b) Los mejores ($\hat\beta_0 \;\;  \; \hat\beta_1$ tienen la menor varianza entre todos los demás estimadores lineales insesgados)
+
+
+```{r setup, include=FALSE}
+
+install.packages("ggplot2") # solo si necesario... 
+setwd("D:\Documentos\Tareas Data Science")
+data(package="ggplot2")	
+library(ggplot2)
+data(diamonds) 
+head(diamonds)
+
+dim(diamonds)		# Dimensions of the data frame. 		Syntax: dim(x)
+head(diamonds)		# Shows first n rows. 					Syntax: head(x,n) 
+tail(diamonds)		# Shows last n rows. 					Syntax: head(x,n)
+str(diamonds)  		# Displays the structure of an object. 	Syntax: str(x)
+summary(diamonds)	# Displays summary statistics.			Syntax: summary(x)
+names(diamonds)		# Element names of an object.			Syntax: names(x)
+colnames(diamonds)	# Column names of an object.			Syntax: colnames(x)
+summary(diamonds)
+
+#Create dummy variables for CUT
+head(diamonds$cut, n=10)
+diamonds$fair_C <- ifelse(diamonds$cut=="Fair", 1,0)
+diamonds$vg_C <- ifelse(diamonds$cut=="Very Good", 1,0)
+diamonds$ideal_C <- ifelse(diamonds$cut=="Ideal", 1,0)
+diamonds$premium_C <- ifelse(diamonds$cut=="Premium", 1,0)
+diamonds$good_C <- ifelse(diamonds$cut=="Good", 1,0)
+
+#Create dummy variables for Color
+head(diamonds$color, n=10)
+diamonds$color_D <- ifelse(diamonds$color=="D", 1,0)
+diamonds$color_E <- ifelse(diamonds$color=="E", 1,0)
+diamonds$color_F <- ifelse(diamonds$color=="F", 1,0)
+diamonds$color_G <- ifelse(diamonds$color=="G", 1,0)
+diamonds$color_I <- ifelse(diamonds$color=="I", 1,0)
+diamonds$color_J <- ifelse(diamonds$color=="J", 1,0)
+diamonds$color_H <- ifelse(diamonds$color=="H", 1,0)
+
+
+#Create dummy variables for clarity
+head(diamonds$clarity, n=10)
+diamonds$clarity_I1 <- ifelse(diamonds$color=="I1", 1,0)
+diamonds$clarity_SI2 <- ifelse(diamonds$color=="SI2", 1,0)
+diamonds$clarity_SI1 <- ifelse(diamonds$color=="SI1", 1,0)
+diamonds$clarity_VS1 <- ifelse(diamonds$color=="VS1", 1,0)
+diamonds$clarity_VS2 <- ifelse(diamonds$color=="VS2", 1,0)
+diamonds$clarity_VVS2 <- ifelse(diamonds$color=="VVS2", 1,0)
+diamonds$clarity_VVS1 <- ifelse(diamonds$color=="VVS1", 1,0)
+diamonds$clarity_IF <- ifelse(diamonds$color=="IF", 1,0)
+
+head(diamonds$clarity_IF, n=10)
+summary(diamonds$clarity_I1)
+summary(diamonds$clarity_SI1)
+summary(diamonds$clarity_VS1)
+summary(diamonds$clarity_VS2)
+summary(diamonds$clarity_VVS2)
+summary(diamonds$clarity_VVS1)
+summary(diamonds$clarity_IF)
+
+?summary
+
+diamonds
+model1 <- lm(price ~ carat+good_C+vg_C+premium_C+ideal_C +color_D+color_E+color_F+color_G
+             +color_H+color_I+depth+table+x+y+z, data= diamonds)
+summary(model1)
+prediction.model1 <- predict.lm(model1,  # model
+                                newdata = data.frame(educate=range.educate, 
+                                                     age = mean(turnout$age), 
+                                                     gender=  "Male"), # must be data frame
+                                se.fit=TRUE,  # keep standard errors
+                                interval="confidence") # provide confidence intervals to the mean
+library("texreg")
+
+Table1 <- texreg (list(model1),	# List of models to compare
+                 custom.model.names = c("Model 1"), # Model names
+                 digits = 2,							# Number of digits
+                 custom.note = "Trying to get a table", # Adds notes
+                 caption = "Resultados de la regresion", # Adds a caption
+                 caption.above = TRUE,				# Caption position
+                 label = "Table Texreg",				# Adds a label
+                 float.pos = "h!"					# Table position
+
+)
+```
+
+##¿Qué tan bueno fue el ajuste?
+El ajuste es relativamente bueno, pues el modelo explica 87% de la variabilidad de los datos. Es decir, estas variables independientes explican 87% de la variación en precio. 
+
+##¿Qué medida puede ayudarnos a saber la calidad del ajuste? ¿Cuál fue el valor de que ajustó su modelo y que relación tiene con la calidad del ajuste 
+Una medida que puede ayudarnos es el error estandar de los residuos. Esta medida nos dice que tanto se desvia nuestra variable de interes (precio) de el ajuste que estamos estimando.
+En este caso, dado que el valor promedio de todos los diamantes de la muestra es 9,285 (la intercepta), y tenemos un error estandar de 1,393, entonces el porcentaje de error representa aproximadamente 15%; es decir, en promedio cualquier predicion estara fuera del valor real en un 15%.  
+
+Para crear la log verosimilitud, corri el codigo
+```{r setup, include=FALSE}
+
+lrfit <- glm( price ~ carat+good_C+vg_C+premium_C+ideal_C +color_D+color_E+color_F+color_G
+              +color_H+color_I+depth+table+x+y+z , family = gaussian, data=diamonds)
+
+lrfit
+```
+Y los coeficientes son los mismos.
